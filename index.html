@@ -62,7 +62,7 @@
 
                 <span class="link-block">
                   <a
-                    href="./static/pdfs/milestone-report.pdf"
+                    href="./static/pdfs/15418_milestone_report.pdf"
                     target="_blank"
                     rel="noopener noreferrer"
                     class="external-link button is-normal is-rounded is-dark">
@@ -87,7 +87,11 @@
                 </span>
 
                 <span class="link-block">
-                  <a href="[GITHUB URL]" class="external-link button is-normal is-rounded is-dark">
+                  <a
+                    href="https://github.com/jyuan2003/task-scheduler"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="external-link button is-normal is-rounded is-dark">
                     <span class="icon">
                       <i class="fab fa-github"></i>
                     </span>
@@ -96,6 +100,65 @@
                 </span>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column is-10">
+          <div class="content schedule-section">
+            <h2 class="title is-3 has-text-centered">Schedule</h2>
+            <ul class="schedule-list">
+              <li>
+                <strong>Week 1:</strong> Generate graphs with varying topologies, edge densities, and sizes and
+                re-organize the graph structure to improve locality and storage through graph sharding and
+                compression.
+              </li>
+              <li>
+                <strong>Week 2:</strong> Implement graph and scheduler utilities and an MPI pipeline that supports
+                all graph representations. Implement all-to-all communication.
+              </li>
+              <li>
+                <strong>Week 3:</strong>
+                <ul>
+                  <li>
+                    <strong>Week 3.1:</strong>
+                    <ol>
+                      <li>Simulate real runtime communication cost. (Jason)</li>
+                      <li>Implement a ring interconnect topology. (Jason)</li>
+                      <li>Build an OpenMP pipeline that supports all graph representations. (Rui)</li>
+                    </ol>
+                  </li>
+                  <li>
+                    <strong>Week 3.2:</strong>
+                    <ol>
+                      <li>
+                        Implement experiment pipelines and necessary utilities to record results and plot the
+                        communication/computation cost, and cache behaviors by types and representations of graphs.
+                        (Jason)
+                      </li>
+                      <li>Implement coarse and fine-grained lock/lock-free data structures in OpenMP. (Rui)</li>
+                    </ol>
+                  </li>
+                </ul>
+              </li>
+              <li>
+                <strong>Week 4:</strong>
+                <ul>
+                  <li>
+                    <strong>Week 4.1:</strong> Debug and continue to optimize current OpenMP and MPI
+                    implementations. Benchmark their scalability on PSC machines. (Both)
+                  </li>
+                  <li>
+                    <strong>Week 4.2:</strong> Summarize and analyze the final results. (Both)
+                  </li>
+                </ul>
+              </li>
+            </ul>
           </div>
         </div>
       </div>

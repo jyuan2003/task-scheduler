@@ -104,6 +104,38 @@ body {
   font-size: 0.95rem;
 }
 
+.schedule-section {
+  background: #faf9f5;
+  border: 1px solid #e7e2d8;
+  border-radius: 18px;
+  padding: 2rem;
+  box-shadow: 0 12px 30px rgba(44, 39, 30, 0.08);
+}
+
+.schedule-section .title {
+  font-family: 'Google Sans', sans-serif;
+  margin-bottom: 1.5rem;
+}
+
+.schedule-list {
+  margin-left: 1.25rem;
+}
+
+.schedule-list > li {
+  margin-bottom: 1rem;
+  line-height: 1.7;
+}
+
+.schedule-list ul,
+.schedule-list ol {
+  margin-top: 0.6rem;
+  margin-left: 1.5rem;
+}
+
+.schedule-list li li {
+  margin-bottom: 0.55rem;
+}
+
 .publication-banner img {
 }
 
