@@ -536,6 +536,18 @@ double RawGraph::get_edge_weight(int u, int v) const {
     return 0.0;
 }
 
+
+std::vector<int> RawGraph::get_node_in_neighbors(int u) const {
+    std::vector<int> in_neighbors;
+    for (const auto & e: edges) {
+        if (e.v == u) {
+            in_neighbors.push_back(e.u);
+        }
+    }
+    return in_neighbors;
+}
+
+
 std::vector<int> RawGraph::get_node_out_neighbors(int u) const {
     std::vector<int> out_neighbors;
     for (const auto & e: edges) {
@@ -570,6 +582,18 @@ double ShardedGraph::get_edge_weight(int u, int v) const {
     }
     return 0.0;
 }
+
+
+std::vector<int> ShardedGraph::get_node_in_neighbors(int u) const {
+    std::vector<int> in_neighbors;
+    for (const auto & e: edges) {
+        if (e.v == u) {
+            in_neighbors.push_back(e.u);
+        }
+    }
+    return in_neighbors;
+}
+
 
 std::vector<int> ShardedGraph::get_node_out_neighbors(int u) const {
     std::vector<int> out_neighbors;
@@ -617,6 +641,28 @@ double CompressedGraph::get_edge_weight(int u, int v) const {
     } 
     return 0.0;
 }
+
+
+std::vector<int> CompressedGraph::get_node_in_neighbors(int u) const {
+    std::vector<int> in_neighbors;
+    
+    for (int v = 0; v < num_nodes(); v ++) { 
+        int out = v;   
+        for (int i = 0; i < nodes[v].groups.size(); i++) {
+            for (int j = 0; j < nodes[v].groups[i].out_neighbors.size(); j++) {
+                out += nodes[v].groups[i].out_neighbors[j];
+                if (out == u) {
+                    in_neighbors.push_back(v);
+                }
+            }
+        }
+    }
+    
+    
+    return in_neighbors;
+}
+
+
 
 std::vector<int> CompressedGraph::get_node_out_neighbors(int u) const {
     std::vector<int> out_neighbors;
@@ -670,6 +716,27 @@ double CompressedShardedGraph::get_edge_weight(int u, int v) const {
     } 
     return 0.0;
 }
+
+std::vector<int> CompressedShardedGraph::get_node_in_neighbors(int u) const {
+    std::vector<int> in_neighbors;
+    for (int v = node_start; v < node_end; v++) {
+        int out = v;
+        for (int i = 0; i < nodes[v - node_start].groups.size(); i++) {
+            for (int j = 0; j < nodes[v - node_start].groups[i].out_neighbors.size(); j++) {
+                out += nodes[v - node_start].groups[i].out_neighbors[j];
+                if (out == u) {
+                    in_neighbors.push_back(v);
+                }
+                
+            }
+        }
+    
+    }
+    
+    return in_neighbors;
+}
+
+
 
 std::vector<int> CompressedShardedGraph::get_node_out_neighbors(int u) const {
     std::vector<int> out_neighbors;
