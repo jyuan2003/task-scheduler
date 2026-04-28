@@ -24,6 +24,7 @@ struct RawGraph {
     double get_node_weight(int id) const;
     double get_edge_weight(int u, int v) const;
 
+    std::vector<int> get_node_in_neighbors(int id) const;
     std::vector<int> get_node_out_neighbors(int id) const;
 
     int local_to_global(int id) const;
@@ -43,6 +44,7 @@ struct ShardedGraph {
     double get_node_weight(int id) const;
     double get_edge_weight(int u, int v) const;
 
+    std::vector<int> get_node_in_neighbors(int id) const;
     std::vector<int> get_node_out_neighbors(int id) const;
 
     int local_to_global(int id) const;
@@ -77,6 +79,7 @@ struct CompressedGraph {
     double get_node_weight(int id) const;
     double get_edge_weight(int u, int v) const;
 
+    std::vector<int> get_node_in_neighbors(int id) const;
     std::vector<int> get_node_out_neighbors(int id) const;
 
     int local_to_global(int id) const;
@@ -94,6 +97,7 @@ struct CompressedShardedGraph {
     double get_node_weight(int id) const;
     double get_edge_weight(int u, int v) const;
 
+    std::vector<int> get_node_in_neighbors(int id) const;
     std::vector<int> get_node_out_neighbors(int id) const;
 
     int local_to_global(int) const;
