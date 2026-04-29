@@ -2,7 +2,7 @@ import networkx as nx
 import math
 import random
 import numpy as np
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 from itertools import product
 
 
@@ -80,8 +80,9 @@ def make_graph(config, seed=42, vis=False, save_dir=PROJECT_ROOT/"data_generatio
         G.edges[u, v]["weight"] = random.uniform(*w_dist)
 
     if vis:
-        nx.draw(G, with_labels=True, font_weight="bold")
-        plt.show()
+        # nx.draw(G, with_labels=True, font_weight="bold")
+        # plt.show()
+        pass
 
     if save_dir:
         save_graph(G, config, save_dir)
