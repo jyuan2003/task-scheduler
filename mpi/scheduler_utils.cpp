@@ -2,8 +2,10 @@
 #include <algorithm>
 #include <mpi.h>
 #include <random>
+#include <chrono>
+#include <cmath>
 
-void initialize(Scheduler &scheduler) {
+void initialize_random(Scheduler &scheduler) {
     std::random_device rd;
     std::mt19937 gen(rd());  
     std::uniform_int_distribution<int> dist(0, scheduler.num_colors - 1);
@@ -11,6 +13,14 @@ void initialize(Scheduler &scheduler) {
         scheduler.colors[i] = dist(gen);
     }
 }
+
+void initialize_contiguous(Scheduler &scheduler) {
+    for (std::size_t i = 0; i < scheduler.colors.size(); i++) {
+        int color = (int)(i * scheduler.num_colors / scheduler.colors.size());
+        scheduler.colors[i] = std::min(color, scheduler.num_colors - 1);
+    }
+}
+
 
 
 void bcast_compressed(CompressedGraph &compressed, int pid) {
@@ -162,74 +172,6 @@ void bcast_raw(RawGraph &raw, int pid) {
 
 }
 
-void update_scheduler(Scheduler &scheduler, std::vector<int> &color_updates, std::vector<double> &runtime_updates) {
-    for (int i = 0; i < color_updates.size(); i += 2) {
-        scheduler.colors[color_updates[i]] = color_updates[i + 1];
-    }
-    for (int i = 0; i < runtime_updates.size(); i++) {
-        scheduler.runtime[i] += runtime_updates[i];
-    }
-}
-
-void all_to_all_sync_scheduler(
-    Scheduler &scheduler, 
-    std::vector<int> &color_updates, 
-    std::vector<double> &runtime_updates,
-    int pid
-) {
-    
-    int num_processes = 0;
-    MPI_Comm_size(MPI_COMM_WORLD, &num_processes);
-
-    int num_local_color_updates = color_updates.size();
-    std::vector<int> num_global_color_updates(num_processes);
-
-    MPI_Allgather(&num_local_color_updates, 1, MPI_INT, num_global_color_updates.data(), 1, MPI_INT, MPI_COMM_WORLD);
-
-    std::vector<int> global_color_updates;
-    std::vector<double> global_runtime_updates(scheduler.num_colors, 0.0);
-    std::vector<int> global_color_offsets(num_processes, 0);
-
-    int total_global_color_updates = 0;
-
-    for (int i = 0; i < num_processes; i++) {
-        if (i > 0) {
-            global_color_offsets[i] = global_color_offsets[i - 1] + num_global_color_updates[i - 1];
-        }
-        total_global_color_updates += num_global_color_updates[i];
-    }
-
-    global_color_updates.resize(total_global_color_updates);
-
-    if (total_global_color_updates > 0) {
-        MPI_Allgatherv(
-            color_updates.data(), 
-            num_local_color_updates, 
-            MPI_INT,
-            global_color_updates.data(),
-            num_global_color_updates.data(),
-            global_color_offsets.data(),
-            MPI_INT,
-            MPI_COMM_WORLD
-        );
-    }
-
-
-
-    MPI_Allreduce(
-        runtime_updates.data(),
-        global_runtime_updates.data(),
-        scheduler.num_colors,
-        MPI_DOUBLE,
-        MPI_SUM,
-        MPI_COMM_WORLD
-    ); 
-
-    update_scheduler(scheduler, global_color_updates, global_runtime_updates);
-    color_updates.clear();
-    std::fill(runtime_updates.begin(), runtime_updates.end(), 0.0);
-    
-}
 
 
 
@@ -238,6 +180,4 @@ void report_program_stats(Scheduler &scheduler) {
     double span = *std::max_element(scheduler.runtime.begin(), scheduler.runtime.end());
     std::cout << "Runtime span:" << " " << span << std::endl;
 }
-
-
 

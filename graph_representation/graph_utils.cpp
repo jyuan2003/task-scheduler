@@ -5,7 +5,7 @@
 #include <iostream>
 #include <string>
 #include <filesystem>
-#define NUM_SHARDS 10
+
 
 
 void load_raw(RawGraph &raw, const std::string &fname) {
@@ -110,12 +110,12 @@ void load_sharded(ShardedGraph &shard, const std::string &fname) {
 }
 
 
-void raw_to_sharded(RawGraph &raw, std::vector<ShardedGraph> &all_sharded) {
+void raw_to_sharded(RawGraph &raw, std::vector<ShardedGraph> &all_sharded, int num_shards) {
 
     int interval_true_size;
     // int num_shards = (raw.nodes.size() + ShardSize - 1) / ShardSize;
-    int shard_size = (raw.nodes.size() + NUM_SHARDS - 1) / NUM_SHARDS;
-    all_sharded.resize(NUM_SHARDS);
+    int shard_size = (raw.nodes.size() + num_shards - 1) / num_shards;
+    all_sharded.resize(num_shards);
     int interval_id = 0;
     for (int interval_start = 0; interval_start < raw.nodes.size(); interval_start += shard_size) {
         interval_true_size = std::min(shard_size, (int)raw.nodes.size() - interval_start);

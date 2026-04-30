@@ -110,7 +110,7 @@ void load_raw(RawGraph &raw, const std::string &fname);
 
 void load_sharded(ShardedGraph &sharded, const std::string &fname);
 void save_all_sharded(std::vector<ShardedGraph> &all_sharded, const std::string &prefix);
-void raw_to_sharded(RawGraph &raw, std::vector<ShardedGraph> &all_sharded); 
+void raw_to_sharded(RawGraph &raw, std::vector<ShardedGraph> &all_sharded, int num_shards); 
 
 
 void save_compressed(CompressedGraph &compressed, const std::string &fname);

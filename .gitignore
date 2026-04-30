@@ -5,3 +5,4 @@ dataset/
 *.o
 mpi/mpi_main
 graph_representation/graph_main
+__pycache__/
