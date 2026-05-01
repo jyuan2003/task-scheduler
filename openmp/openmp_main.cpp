@@ -22,7 +22,7 @@ int main(int argc, char *argv[]) {
     int color = 1;
     int opt;
     std::string rep;
-    while ((opt = getopt(argc, argv, "f:i:n:b:c:c:")) != -1) {
+    while ((opt = getopt(argc, argv, "f:i:n:b:c:r:")) != -1) {
         switch (opt) {
         case 'n':
             num_processes = atoi(optarg);
@@ -41,6 +41,7 @@ int main(int argc, char *argv[]) {
             break;
         case 'r':
             rep = optarg;
+            break;
         default:
             std::cerr << "Usage: " << argv[0] << " -f input_graphname [-i num_iters] -n num_processes -b batch_size -c num_colors -r repository\n";
             exit(EXIT_FAILURE);
@@ -99,6 +100,10 @@ int main(int argc, char *argv[]) {
     }
     else {
         load_raw(raw_graph, input_graphname);
+    }
+    if (rep == "compressed") {
+        raw_to_compressed(raw_graph, compressed_graph);
+        compressed = true;
     }
     std::vector<std::vector<int>> nodes(num_processes);
     std::vector<int> starting_node(num_processes);
