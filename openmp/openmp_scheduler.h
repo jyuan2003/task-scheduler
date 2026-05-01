@@ -3,6 +3,7 @@
 #include "../graph_representation/graph.h"
 #include <omp.h>
 #include <utility>
+#include <algorithm>
 struct Scheduler {
     // node -> node's color
     std::vector<int> colors;
@@ -15,7 +16,44 @@ struct Scheduler {
 
 void initialize(Scheduler &scheduler);
 void report_program_stats(Scheduler &scheduler);
-void update_scheduler(Scheduler &scheduler, int old_color, int new_color, int node);
+template <typename Graph>
+void update_scheduler(Scheduler &scheduler, Graph &graph, int old_color, int new_color, int v){
+    if (old_color == new_color) return;
+    double old_in = 0.0;
+    double old_out = 0.0;
+    double new_in = 0.0;
+    double new_out = 0.0;
+    double all_out = 0.0;
+    std::vector<int> out_neighbors = graph.get_node_out_neighbors(v);
+    std::vector<int> in_neighbors = graph.get_node_in_neighbors(v);
+    for (const auto &out : out_neighbors){
+        if (scheduler.colors[out] == old_color){
+            old_out += graph.get_edge_weight(v, out);
+        }
+        else{
+            all_out += graph.get_edge_weight(v, out);
+        if (scheduler.colors[out] == new_color)
+            new_out += graph.get_edge_weight(v, out);                  
+        }
+    }
+    omp_set_lock(&(scheduler.lock));
+    for (const auto &in : in_neighbors){
+        if (scheduler.colors[in] == new_color){
+            new_in += graph.get_edge_weight(in, v);
+        }
+        else if (scheduler.colors[in] == old_color){
+            old_in += graph.get_edge_weight(in, v);
+        }
+    }
+    scheduler.runtime[old_color] -= graph.get_node_weight(v);
+    scheduler.runtime[old_color] -= all_out;
+    scheduler.runtime[old_color] += old_in;
+    scheduler.runtime[new_color] += graph.get_node_weight(v);
+    scheduler.runtime[new_color] -= new_in;
+    scheduler.runtime[new_color] += old_out + all_out - new_out;
+    scheduler.max_runtime = *std::max_element(scheduler.runtime.begin(), scheduler.runtime.end());
+    omp_unset_lock(&(scheduler.lock));
+}
 
 template <typename Graph>
 void assign_node(Graph &graph, Scheduler &scheduler, int v){
@@ -77,7 +115,7 @@ void assign_node(Graph &graph, Scheduler &scheduler, int v){
                     }
                 }
             }
-            update_scheduler(scheduler, old_color, best_color, v);
+            update_scheduler(scheduler, graph, old_color, best_color, v);
 }
 template <typename Graph>
 void make_assignment(Graph &graph, Scheduler &scheduler, int pid, int batch_size,
@@ -100,9 +138,10 @@ void make_assignment(Graph &graph, Scheduler &scheduler, int pid, int batch_size
         batch_node = std::min(batch_node + batch_size, max_node);
     }
     for (int proc = pid+1; proc < starting_batch.size(); ++proc){
-        int max_batch = starting_batch[proc+1];
+        int max_batch = (proc == starting_batch.size() - 1) ? batch_done.size() : starting_batch[proc+1];
         int min_batch = starting_batch[proc];
         int batch_node = starting_node[proc];
+        int max_node = (proc == starting_node.size() - 1) ? graph.num_nodes(): starting_node[proc+1];
         for (int batch = min_batch; batch < max_batch; ++batch){
             omp_set_lock(&locks[batch]);
             if (batch_done[batch]){
@@ -119,9 +158,10 @@ void make_assignment(Graph &graph, Scheduler &scheduler, int pid, int batch_size
         }
     }
     for (int proc = pid-1; proc >= 0; --proc){
-        int max_batch = starting_batch[proc+1];
+        int max_batch = (proc == starting_batch.size() - 1) ? batch_done.size() : starting_batch[proc+1];
         int min_batch = starting_batch[proc];
         int batch_node = starting_node[proc];
+        int max_node = (proc == starting_node.size() - 1) ? graph.num_nodes(): starting_node[proc+1];
         for (int batch = min_batch; batch < max_batch; ++batch){
             omp_set_lock(&locks[batch]);
             if (batch_done[batch]){
