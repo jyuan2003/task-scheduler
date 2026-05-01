@@ -1,0 +1,8 @@
+data_generation/raw_dataset/
+dataset/
+*.csv
+.vscode
+*.o
+mpi/mpi_main
+graph_representation/graph_main
+__pycache__/
